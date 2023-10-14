@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="RCE大合集, Rmy4x&#39;s blog">
+    <meta name="keywords" content="PHP反序列化, Rmy4x&#39;s blog">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>RCE大合集 | Rmy4x&#39;s blog</title>
+    <title>PHP反序列化 | Rmy4x&#39;s blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -267,12 +267,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">RCE大合集</h1>
+                    <h1 class="description center-align post-title">PHP反序列化</h1>
                 </div>
             </div>
         </div>
@@ -388,16 +388,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/CTF/">
-                                <span class="chip bg-color">CTF</span>
-                            </a>
-                        
-                            <a href="/tags/RCE/">
-                                <span class="chip bg-color">RCE</span>
-                            </a>
-                        
-                            <a href="/tags/SHCTF/">
-                                <span class="chip bg-color">SHCTF</span>
+                            <a href="/tags/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-CTF/">
+                                <span class="chip bg-color">PHP反序列化 CTF</span>
                             </a>
                         
                     </div>
@@ -408,8 +400,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/CTF-rce%E5%90%88%E9%9B%86-%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/" class="post-category">
-                                CTF rce合集 各种姿势
+                            <a href="/categories/PHP-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80-%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E5%90%88%E9%9B%86/" class="post-category">
+                                PHP 反序列化基础 魔术方法合集
                             </a>
                         
                     </div>
@@ -421,7 +413,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-10-05
+                    2023-10-13
                 </div>
                 
 
@@ -442,46 +434,109 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="RCE大合集"><a href="#RCE大合集" class="headerlink" title="RCE大合集"></a>RCE大合集</h1><h3 id="简单绕过cat，tac命令，绕过空格"><a href="#简单绕过cat，tac命令，绕过空格" class="headerlink" title="简单绕过cat，tac命令，绕过空格"></a>简单绕过cat，tac命令，绕过空格</h3><pre class="line-numbers language-php"><code class="language-php">  
-<span class="token delimiter">&lt;?php</span>
+                <h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>序列化：关键函数serialize():将PHP中创建的对象，变成一个字符串。</p>
+<p>反序列化：关键函数unserialize():将经过序列化的字符串转换回PHP值</p>
+<h2 id="为什么会产生反序列化漏洞？"><a href="#为什么会产生反序列化漏洞？" class="headerlink" title="为什么会产生反序列化漏洞？"></a>为什么会产生反序列化漏洞？</h2><p>PHP反序列化漏洞又称PHP对象注入，是因为程序对输入数据处理不当导致的。需要具备反序列化漏洞的前提：必须有unserailize()函数；unserailize()函数的参数必须可控（为了成功达到控制你输入的参数所实现的功能，可能需要绕过一些魔法函数）。</p>
+<h2 id="魔术方法"><a href="#魔术方法" class="headerlink" title="魔术方法"></a>魔术方法</h2><h3 id="call方法"><a href="#call方法" class="headerlink" title="_call方法"></a><strong>_call方法</strong></h3><p><strong>如何调用该方法？</strong></p>
+<p>当调用一个没有在类中声明的方法时，可以调用__call()方法代替声明一个方法。接受方法名和数组作为参数。</p>
+<p><strong>简单来说：</strong>调用了一个没有声明的方法，自动触发_call方法</p>
+<p><strong>简单代码示例：</strong> </p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token delimiter">&lt;?php</span>  
+<span class="token keyword">class</span> <span class="token class-name">test</span><span class="token punctuation">{</span>  
+<span class="token comment" spellcheck="true">//魔术方法__call  </span>
+<span class="token comment" spellcheck="true">/* 
+$method 获得方法名 
+$arg 获得方法的参数集合 
+*/</span>  
+<span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function">__call</span><span class="token punctuation">(</span><span class="token variable">$method</span><span class="token punctuation">,</span><span class="token variable">$arg</span><span class="token punctuation">)</span><span class="token punctuation">{</span>  
+    <span class="token keyword">echo</span> <span class="token string">'你想调用我不存在的方法'</span><span class="token punctuation">,</span><span class="token variable">$method</span><span class="token punctuation">,</span><span class="token string">'方法&lt;br/>'</span><span class="token punctuation">;</span>  
+    <span class="token keyword">echo</span> <span class="token string">'还传了一个参数&lt;br/>'</span><span class="token punctuation">;</span>  
+    <span class="token keyword">echo</span> <span class="token function">print_r</span><span class="token punctuation">(</span><span class="token variable">$arg</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'&lt;br/>'</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>   
+<span class="token variable">$list</span><span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+<span class="token variable">$list</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">say</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  
+<span class="token delimiter">?></span>  
+<span class="token comment" spellcheck="true">/*
+输出结果：
+你想调用我不存在的方法say方法
+还传了一个参数
+Array
+(
+    [0] => 1
+    [1] => 2
+    [2] => 3
+)
+1
+*/</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="invoke"><a href="#invoke" class="headerlink" title="__invoke"></a><strong>__invoke</strong></h3><p> <strong>如何调用该方法？</strong></p>
+<p>当一个对象类中存在__invoke魔术方法，这个对象类被当作函数进行调用时，就会触发_invoke魔术方法</p>
+<p><strong>简单来说：</strong></p>
+<p>当你以调用函数的方式调用一个对象时会触发</p>
+<p><strong>简单代码示例：</strong> </p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token delimiter">&lt;?php</span>
+<span class="token keyword">Class</span> <span class="token class-name">studyphp</span> <span class="token punctuation">{</span>
 
-<span class="token variable">$rce</span> <span class="token operator">=</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'rce'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$rce</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">preg_match</span><span class="token punctuation">(</span><span class="token string">"/cat|more|less|head|tac|tail|nl|od|vi|vim|sort|flag| |\;|[0-9]|\*|\`|\%|\>|\&lt;|\'|\"/i"</span><span class="token punctuation">,</span> <span class="token variable">$rce</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token function">system</span><span class="token punctuation">(</span><span class="token variable">$rce</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
-            <span class="token keyword">echo</span> <span class="token string">"hhhhhhacker!!!"</span><span class="token punctuation">.</span><span class="token string">"\n"</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function">__invoke</span><span class="token punctuation">(</span><span class="token variable">$arg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">echo</span> <span class="token string">"invoke被调用咯: "</span> <span class="token punctuation">.</span> <span class="token variable">$arg</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-    <span class="token function">highlight_file</span><span class="token punctuation">(</span><span class="token constant">__FILE__</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><strong>所被过滤的：</strong></p>
-<p><em><strong>cat、more、less、head、tac、tail、nl、od、vi、vim、sort，空格字符，分号 ，0-9，特殊字符: &#96; % &gt; &lt; ‘ “</strong></em></p>
-<p><strong>payload：</strong></p>
-<pre><code>?rce=ls$&#123;IFS&#125;/
-</code></pre>
-<pre><code>?rce=paste$&#123;IFS&#125;/fla?
-</code></pre>
-<p><em><strong>小结：</strong></em></p>
-<blockquote>
-<p>paste命令在Linux系统中主要用于将多个文件按行合并在一起。它的主要功能和用法包括:</p>
-<ol>
-<li><p>合并文件:基本用法是<code>paste file1 file2</code>,这会把file1和file2的内容合并显示,两文件相邻的行会并在一起。</p>
-</li>
-<li><p>指定分隔符:可以用<code>-d</code>参数指定合并时的分隔符,例如<code>paste -d &quot;:&quot; file1 file2</code>会使用冒号分隔。</p>
-</li>
-<li><p>串行合并: <code>-s</code>参数可以将多个文件串行合并,一个接一个,不并排显示。</p>
-</li>
-<li><p>从标准输入读取:可以用<code>-</code>参数从标准输入读取内容合并,例如<code>paste - -</code>。</p>
-</li>
-<li><p>输出到文件:可以通过重定向将合并结果输出到文件,例如<code>paste file1 file2 &gt; merged.txt</code>。</p>
-</li>
-<li><p>绕过过滤:在安全测试中,paste命令可以用来绕过对空格或分号的过滤,合并多个命令。</p>
-<p><strong>总结:paste的用途主要是合并文本文件,指定分隔符,可以串行合并或输出到文件。也可以从标准输入读取。在安全测试中可以用来构造绕过过滤的命令。</strong></p>
-</li>
-</ol>
-</blockquote>
+
+<span class="token variable">$a</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">studyphp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token variable">$a</span><span class="token punctuation">(</span><span class="token string">"我是invoke被调用咯"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter">?></span>
+<span class="token comment" spellcheck="true">/*可以手动输出去看看*/</span>
+<span class="token comment" spellcheck="true">/* 输出结果：
+invoke被调用咯: 我是invoke被调用咯
+*/</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我自己基础比较差，当时没理解什么叫以调用函数的方式调用对象</p>
+<p>这么来说 函数是这么调用的，举个简单的例子</p>
+<pre class="line-numbers language-php"><code class="language-php">下面演示了如何调用一个名为 myFunction 的函数，并传递 <span class="token number">1</span> 和 <span class="token number">2</span> 两个参数：
+
+<span class="token variable">$result</span> <span class="token operator">=</span> <span class="token function">myFunction</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>如果还是不理解 就这么说，对象是-&gt;这样调用的 而函数是类似这样<code>$a（）；</code>调用的</p>
+<h3 id="set"><a href="#set" class="headerlink" title="_set"></a>_set</h3><p> <strong>如何调用该方法？</strong></p>
+<p>__set() 魔术方法是当给一个对象不存在的变量赋值时就会被触发</p>
+<p><strong>简单来说：</strong> 上面的说法就够简单了吧 :stuck_out_tongue:</p>
+<p><strong>简单代码示例</strong>:</p>
+<p><em>拿我做的一道题举例子</em></p>
+<p><img src="/2023/10/13/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/1.png" alt="1.png"></p>
+<p>这个里边 fun并没有被定义 却被复制了 所以会跳转到_set魔术方法</p>
+<p>（自己的拙见，跟着佬的wp反推的，不知道对不对，如果不对的话还请谅解斧正）</p>
+<h3 id="toString-NaN"><a href="#toString-NaN" class="headerlink" title="__toString"></a>__toString</h3><p> <strong>如何调用该方法？</strong></p>
+<p> _ toString当我们将一个对象打印为字符串或使用 echo 函数输出对象时，会自动调用__toString方法</p>
+<p>也就是 ： 在对象当做字符串的时候会被调用</p>
+<p><strong>简单来说：</strong>对象当做字符串的时候会被调用，就比如 ：直接echo对象的的就会自动调用该方法 </p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token delimiter">&lt;?</span>
+<span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token variable">$name</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function">__construct</span><span class="token punctuation">(</span><span class="token variable">$name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">name</span> <span class="token operator">=</span> <span class="token variable">$name</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function">__toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">'This person\'s name is '</span> <span class="token punctuation">.</span> <span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">name</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token variable">$person</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Person</span><span class="token punctuation">(</span><span class="token string">'John'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">echo</span> <span class="token variable">$person</span><span class="token punctuation">;</span>
+<span class="token delimiter">?></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="unset"><a href="#unset" class="headerlink" title="__unset"></a>__unset</h3><p>对不可访问或不存在的属性进行unset时被调用</p>
+<h3 id="callStatic"><a href="#callStatic" class="headerlink" title="__callStatic"></a>__callStatic</h3><p>​        调用不可访问或不存在的静态方法时被调用</p>
+<h3 id="clone"><a href="#clone" class="headerlink" title="__clone"></a>__clone</h3><p>​       进行对象clone时被调用，用来调整对象的克隆行为</p>
+<h3 id="constuct"><a href="#constuct" class="headerlink" title="__constuct"></a>__constuct</h3><p>​        构建对象的时被调用；</p>
+<h3 id="debuginfo"><a href="#debuginfo" class="headerlink" title="__debuginfo"></a>__debuginfo</h3><p>当调用var_dump()打印对象时被调用（当你不想打印所有属性）适用于PHP5.6版本</p>
+<h3 id="destruct"><a href="#destruct" class="headerlink" title="__destruct"></a>__destruct</h3><p>明确销毁对象或脚本结束时被调用；</p>
+<h3 id="get"><a href="#get" class="headerlink" title="__get"></a>__get</h3><p>读取不可访问或不存在属性时被调用</p>
+<h3 id="sleep"><a href="#sleep" class="headerlink" title="__sleep"></a>__sleep</h3><p>当使用serialize时被调用，当你不需要保存大对象的所有数据时很有用</p>
+<h3 id="set-state"><a href="#set-state" class="headerlink" title="__set_state"></a>__set_state</h3><p>当调用var_export()导出类时，此静态方法被调用。用__set_state的返回值做为var_export的返回值。</p>
+<h3 id="isset"><a href="#isset" class="headerlink" title="__isset"></a>__isset</h3><p>对不可访问或不存在的属性调用isset()或empty()时被调用</p>
 
                 
             </div>
@@ -508,7 +563,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://rmy4x.github.io/2023/10/05/RCE%E5%A4%A7%E5%90%88%E9%9B%86-1/">https://rmy4x.github.io/2023/10/05/RCE%E5%A4%A7%E5%90%88%E9%9B%86-1/</a>
+                    <a href="https://rmy4x.github.io/2023/10/13/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">https://rmy4x.github.io/2023/10/13/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -546,16 +601,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/CTF/">
-                                    <span class="chip bg-color">CTF</span>
-                                </a>
-                            
-                                <a href="/tags/RCE/">
-                                    <span class="chip bg-color">RCE</span>
-                                </a>
-                            
-                                <a href="/tags/SHCTF/">
-                                    <span class="chip bg-color">SHCTF</span>
+                                <a href="/tags/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-CTF/">
+                                    <span class="chip bg-color">PHP反序列化 CTF</span>
                                 </a>
                             
                         </div>
@@ -725,9 +772,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/10/13/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
                     <div class="card-image">
@@ -745,9 +793,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-10-13
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-10-13
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -760,6 +808,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -775,7 +824,7 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
                 <a href="/2023/10/05/RCE%E5%A4%A7%E5%90%88%E9%9B%86-1/">
@@ -809,7 +858,6 @@
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
