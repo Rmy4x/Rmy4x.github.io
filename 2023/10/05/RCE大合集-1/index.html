@@ -444,48 +444,48 @@
             <div id="articleContent">
                 <h1 id="RCE大合集"><a href="#RCE大合集" class="headerlink" title="RCE大合集"></a>RCE大合集</h1><h3 id="无参RCE"><a href="#无参RCE" class="headerlink" title="无参RCE"></a>无参RCE</h3><p>无参rce，就是说在无法传入参数的情况下，仅仅依靠传入没有参数的函数套娃就可以达到命令执行的效果，这在ctf中也算是一个比较常见的考点，接下来就来详细总结总结它的利用姿势</p>
 <h4 id="1-getallheaders"><a href="#1-getallheaders" class="headerlink" title="1.getallheaders()"></a>1.getallheaders()</h4><p>这个函数的作用是获取<code>http</code>所有的头部信息，也就是<code>headers</code>，然后我们可以用<code>var_dump</code>把它打印出来，但这个有个限制条件就是必须在<code>apache</code>的环境下可以使用，其它环境都是用不了的</p>
-<p><img src="RCE1.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=YjkxNzRlMWM0Yjk0YjFlN2MzNzlhZmVkYmQyZjVhMDRfd2F2YlNiYVFKc1c3Y3dhUUhjOEl4ZXlLQndtYktWYURfVG9rZW46VWxmWGJxOWN0bzJNT214NFlpcmNCc2t5bmdmXzE2OTczNTY3NTA6MTY5NzM2MDM1MF9WNA" alt="img"></p>
 <p>可以看到，所有的头部信息都已经作为了一个<strong>数组</strong>打印了出来，在实际的运用中，我们肯定不需要这么多条，不然它到底执行哪一条呢？所以我们需要选择一条出来然后就执行它，这里就需要用到<code>php</code>中操纵数组的函数了，这里常见的是利用<code>end()</code>函数取出最后一位，这里的效果如下图所示，而且它只会以<strong>字符串</strong>的形式取出<strong>值</strong>而不会取出键，所以说键名随便取就行：</p>
-<p><img src="RCE2.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=N2NmMGFkYjk5NDZkMWRkNjk5Yjg1Zjc4MDE0OTg4MTRfRVh6TUJKUjVYajRxRmdkZ3lYc2laS00wd24yYVhvYnBfVG9rZW46T0xNcmJ4bGZlbzRqNzV4MmRJa2NlTnNKbk9nXzE2OTczNTY3NjU6MTY5NzM2MDM2NV9WNA" alt="img"></p>
 <p>解释下， 键名就是：前面得东西</p>
 <p>那我们把最前面的<code>var_dump</code>改成<code>eval</code>，不就可以执行<code>phpinfo</code>了吗，换言之，就可以实现任意php代码的代码执行了，那在没有过滤的情况下执行命令也就轻而易举了，具体效果如下图所示：</p>
-<p><img src="RCE3.png"></p>
-<p><img src="RCE4.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=NzQzOThiMThhOGMzODI2MDliYTYyODNlYzM3YmNjMGNfbHEybUxYVERaU0dvVlZEd1lMZ0x3d1FhUENKbld1eW5fVG9rZW46VWZhYmIwRjVkb1J1a2N4a0J3RWNxckFobnNDXzE2OTczNTY3NzE6MTY5NzM2MDM3MV9WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=MTc4MzgzMjgyMWZmMjlmNGNjMjYzMTM3MGVlMGM5ZjRfVVhVSnRhM2ZpaHRXdk94dkZXWVZEemwwbXZwSnBZdTlfVG9rZW46TE9HdWJDNGJob29IT254MWkybGNYRVJSblhkXzE2OTczNTY3NzY6MTY5NzM2MDM3Nl9WNA" alt="img"></p>
 <h4 id="2-get-defined-vars"><a href="#2-get-defined-vars" class="headerlink" title="2.get_defined_vars()"></a>2.get_defined_vars()</h4><p><code>getallheaders()</code>是有局限性的，因为如果中间件不是<code>apache</code>的话，它就用不了了，那我们就介绍一种更为普遍的方法<code>get_defined_vars()</code>，这种方法其实和上面那种方法原理是差不多的：</p>
-<p><img src="RCE5.png"></p>
-<p><img src="RCE6.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=NmQ2ODc4OGI0ODYwMTNmY2NhNDZkMDVjZmU3YzhjOTFfQ0xOMk1nN2xWV2pBRHBXNElBWmd4OUFQR0YzemZWeHRfVG9rZW46UEx2TWJBdkhkb0FFbk14QnNScGNLVnFnbmVnXzE2OTczNTY3ODg6MTY5NzM2MDM4OF9WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=M2JlNTZjNWYyYTIwNTE0ZDc3ZmVhMTNlY2ZkZTQ0MjNfVWtsbmJieWw5NGtqSFBLY2Nvc1ZNd0NLSWVRQXJWVXNfVG9rZW46TjFmeGI1QWFqb0MydDF4bEFNa2N5MzkzbmpmXzE2OTczNTY3OTQ6MTY5NzM2MDM5NF9WNA" alt="img"></p>
 <p>他获取的不是headers 是几个全局变量</p>
 <p>返回值是一个二维数组，要用函数将他转换为一维数组，用到的是current函数，这个函数的作用是返回数组中的当前单元，而它的默认是第一个单元，也就是我们GET方式传入的参数。</p>
 <blockquote>
 <p>这里首先声明，<code>pos()</code>函数是<code>current()</code>函数的别名，他们俩是完全一样的哈</p>
 <p>这个函数我们前面已经用的很多了，它的作用就是输出数组中当前元素的值，只输出值而忽略掉键，默认是数组中的第一个值，如果要移动可以用下列方法进行移动</p>
-<p><img src="RCE7.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=Y2U4NTRkOTVhOWFlNDgwZWI5MTczMTE5Y2Q3MjgyMWNfamZMVDRkaXRhN2ZIUHg1RVhQS21IVHRqM3JSa0NKNTVfVG9rZW46WElIQWJ2eVVwb2VwbWF4akx3WGMxMk1OblVmXzE2OTczNTY4MDE6MTY5NzM2MDQwMV9WNA" alt="img"></p>
 </blockquote>
 <p>我这个题的current好像被过滤了  就用pos了</p>
-<p><img src="RCE8.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=OGJhYmQ5ZGQyZTcwMTIzNjgyNWVjZmE1NTBkZjhlYzZfRUJKbkdlTVB6RjlUdElNVE0xU0M4UHVUV29QYmxqOFVfVG9rZW46SE94emJxYTAyb3pWd1l4VkhZMmNEYWZ0bjllXzE2OTczNTY4MDc6MTY5NzM2MDQwN19WNA" alt="img"></p>
 <p>就是这样子的</p>
 <p>然后&#96;&#96;反引号命令执行了</p>
 <p>总结一下，这种方法和第一种方法几乎是一样的，就多了一步，就是利用<code>current()</code>函数将二维数组转换为一维数组，如果大家还是不了解<code>current()</code>函数的用法，可以接着往下看</p>
 <h4 id="3-session-id"><a href="#3-session-id" class="headerlink" title="3.session_id()"></a>3.session_id()</h4><p>这种方法和前面的也差不太多，这种方法简单来说就是把恶意代码写到<code>COOKIE</code>的<code>PHPSESSID</code>中，然后利用<code>session_id()</code>这个函数去读取它，返回一个字符串，然后我们就可以用<code>eval</code>去直接执行了，这里有一点要注意的就是<code>session_id()</code>要开启<code>session</code>才能用，所以说要先<code>session_start()</code>，这里我们先试着把<code>PHPSESSID</code>的值取出来：</p>
-<p><img src="RCE9.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=NzgzOGI1OGJjYTMzMDc4NGM0NDQ5YzkxMGQzNmM3NjdfNkE4bm54R1J4QWl3a2Vvd1Q2QWhrYnNjNzNQVE41ZzZfVG9rZW46SVprSmJmR1Bnb0VZS0t4WTdERmMzdXZDblZiXzE2OTczNTY4NzE6MTY5NzM2MDQ3MV9WNA" alt="img"></p>
 <p>直接出来就是字符串，那就非常完美，我们就不用去做任何的转换了，但这里要注意的是，<code>PHPSESSIID</code>中只能有<code>A-Z a-z 0-9</code>，<code>-</code>，所以说我们要先将恶意代码16进制编码以后再插入进去，而在php中，将16进制转换为字符串的函数为<code>hex2bin</code></p>
-<p><img src="RCE10.png"></p>
-<p><img src="RCE11.png"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=YWU5NWMwY2IzN2UzNjhjYjFiODgyNDFkMGI2MzExZjNfaFlHdkUwS2FnWDYwQ1hiWVljbG5FVW9BVThaTUhIQnJfVG9rZW46RXU1N2I2em5nb1U1d2t4eExKbWNCN0E4bkpnXzE2OTczNTY4ODg6MTY5NzM2MDQ4OF9WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=ZDE0OGE2YWFkNjYwMTY4YTJmNzkwYTFiNmU2MDJmNWJfY05Ka2UwV1ptdG9Fc2s5Qm9IcTRzQ0g3RnZldDJkZTJfVG9rZW46WXBFUmJocVpabzVsVzF4bVZscWNURE5EbnhlXzE2OTczNTY4OTk6MTY5NzM2MDQ5OV9WNA" alt="img"></p>
 <p>那我们就可以开始构造了，首先把<code>PHPSESSID</code>的值替换成这个，然后在前面把<code>var_dump</code>换成<code>eval</code>就可以成功执行了，如图：</p>
-<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWRjMGM3MzExYzdjYzQ0MTgwZmRhMGIzZGUwYzQ5NTJfREdnQmYyTUZMUm1ZRHU2dWNhdmp2VGtaTWtiN3N3MURfVG9rZW46SVprSmJmR1Bnb0VZS0t4WTdERmMzdXZDblZiXzE2OTczNTEzNDA6MTY5NzM1NDk0MF9WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=ZDM0MTEzZDQ2ODg3NTA0ZDBhMTY4YzAxYzI1NjViZGJfajJDaHlQYXpnTlFpbURKRHdBTmF2amo4b2RRV0ZqWmJfVG9rZW46SG1XcWJQdDgyb09qcU14NVc2aWM0UHZwbjllXzE2OTczNTY5MDk6MTY5NzM2MDUwOV9WNA" alt="img"></p>
 <p>成功出现<code>phpinfo</code>，稳稳当当，这种方法我认为是最好的一种方法，很容易理解，只是记得要将恶意代码先16进制编码一下哦</p>
-<h4 id="4-php函数直接读取文件"><a href="#4-php函数直接读取文件" class="headerlink" title="4.php函数直接读取文件"></a>4.php函数直接读取文件</h4><h5 id="1-localeconv"><a href="#1-localeconv" class="headerlink" title="1.localeconv"></a>1.localeconv</h5><p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=MWMyZTBmNjg3MDAzYWQzN2NlMGYyNzNlOWUxZmQxNWNfZGMxTDNobzFkbnU0ZHZKbEhpRE1HcDIzREJ4MFBZR1VfVG9rZW46TkRjWWJqV1Bpb21pOTB4bFpmUmNSNHNvbjRkXzE2OTczNTEzNjY6MTY5NzM1NDk2Nl9WNA" alt="img"></p>
+<h4 id="4-php函数直接读取文件"><a href="#4-php函数直接读取文件" class="headerlink" title="4.php函数直接读取文件"></a>4.php函数直接读取文件</h4><h5 id="1-localeconv"><a href="#1-localeconv" class="headerlink" title="1.localeconv"></a>1.localeconv</h5><p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=YmJmOTg0MzVhMWVhMmMzN2M4MDE3MzQ3ZjM2YjY3YTBfRVNERjdrSnROZjNMaTF5ZWQxaWFETG9hTmE4WEUxanlfVG9rZW46TkRjWWJqV1Bpb21pOTB4bFpmUmNSNHNvbjRkXzE2OTczNTY5MTk6MTY5NzM2MDUxOV9WNA" alt="img"></p>
 <p>这个函数其实之前我一直搞不懂它是干什么的，为什么在这里有用，但实践出真知，我们在测试代码中将<code>localeconv()</code>的返回结果输出出来，这里很神奇的事就发生了，它返回的是一个二维数组，而它的第一位居然是一个点<code>.</code>，那按照我们上面讲的，是可以利用<code>current()</code>函数将这个点取出来的，但这个点有什么用呢？点代表的是当前目录！那就很好理解了，我们可以利用这个点完成遍历目录的操作！相当于就是<code>linux</code>中的<code>ls</code>，具体请看下图：</p>
-<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=NjMyNWIyOTNhZmU5YWViMmNkZGY2OWViYjk2NDZjZmRfMDdSUG81bWo0SWpVclEwbU9yU3dHa3p4aWtKM3o0bE5fVG9rZW46VWZXMGJEaTI0b3Zuc0J4UERFS2NOcW9ZbnFlXzE2OTczNTEzODc6MTY5NzM1NDk4N19WNA" alt="img"></p>
-<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=NWI4YTAyY2NmMTdlYjE0OWEzMzdmN2QxMDFiYTJiZDJfT2NXSU1FVkFHRTdJV2I1VGIwWjRPOFo3cmpLQThJVnNfVG9rZW46S3QyRmJxTWp6bzVhMHB4dG9sNGNWZkp6bjliXzE2OTczNTEzODc6MTY5NzM1NDk4N19WNA" alt="img"></p>
-<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=OWQ0M2E3MWU5YzI0ZDQyZWJiM2JkYjBlY2FkZTc5YWVfampYZ3BNT0JlSHZQak44V0VOek13NThYM1JreGxKMHFfVG9rZW46WEVMMmJtWDZHb0xQQ0V4bUpTWGNsNEtKbmpnXzE2OTczNTEzODc6MTY5NzM1NDk4N19WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=YmMyNTA1NTBkNzc1NWM1Mzc1MjQxNWI2YmIyM2JjY2ZfZ2laVzFiVnc1aHBwVVo0Nk1saUVVRzd0WVhTbXVQd0dfVG9rZW46VWZXMGJEaTI0b3Zuc0J4UERFS2NOcW9ZbnFlXzE2OTczNTY5NTU6MTY5NzM2MDU1NV9WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGNkNzY1MTM1ZWRiODZiMDhlZTQ5N2RiYmM1ZDU0MGZfaHRaMVkwMmh5dDRoeWMzNHBHcW9hV0wycHVHMDZaN2lfVG9rZW46S3QyRmJxTWp6bzVhMHB4dG9sNGNWZkp6bjliXzE2OTczNTY5Njc6MTY5NzM2MDU2N19WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGNmYzM4NmNkODFlYThhNDZkYzI1NDJlNTlhOTZkZDdfVDN0U1UzdUoxS0ozM2g3SFhkV1VVYXVMa3o5ZnM0a1BfVG9rZW46WEVMMmJtWDZHb0xQQ0V4bUpTWGNsNEtKbmpnXzE2OTczNTY5NzI6MTY5NzM2MDU3Ml9WNA" alt="img"></p>
 <h5 id="2-scandir"><a href="#2-scandir" class="headerlink" title="2.scandir"></a>2.scandir</h5><p>这个函数很好理解，就是列出目录中的文件和目录</p>
-<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=NThmN2ViZDZjMGU0NWY4NDk4MmQ3OTkwNTQ3MzU2OWZfSFdKZ1NKWEFYZDhUVExDajlJMlFNV3hpSFFDSHFKc09fVG9rZW46UjdmNGJ3SThHb1ZwRGJ4NjBObWN4QU5lbkpkXzE2OTczNTEzODc6MTY5NzM1NDk4N19WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=NzRiMzY3YTBiYzcwOWY0ZGMyMzk2OGU4NTcyMjA5NWZfQmtmSGpibmoxT2VtSnh0eGJBUDlIUmhGVmZlNzhDbDhfVG9rZW46UjdmNGJ3SThHb1ZwRGJ4NjBObWN4QU5lbkpkXzE2OTczNTY5ODY6MTY5NzM2MDU4Nl9WNA" alt="img"></p>
 <h5 id="3-current-pos"><a href="#3-current-pos" class="headerlink" title="3.current(pos)"></a>3.current(pos)</h5><p>这里首先声明，<code>pos()</code>函数是<code>current()</code>函数的别名，他们俩是完全一样的哈</p>
 <p>这个函数我们前面已经用的很多了，它的作用就是输出数组中当前元素的值，只输出值而忽略掉键，默认是数组中的第一个值，如果要移动可以用下列方法进行移动：</p>
-<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=ZjRiNzdjYWE1Yjg2MzRhZDFjZTNmZjNlODYxZmViM2ZfVjhUcDM4ZDQwMHJNM1FOU1RvQU5FZmlCUmtjc2twRlBfVG9rZW46TjByaWJRVzN6b2c5MHN4STNQeWNtNHBQbm5iXzE2OTczNTEzODc6MTY5NzM1NDk4N19WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=YzgzNDBkZDVhYzAxN2Y4ZTRiZTVjZTMwYjAwNTZkOTRfcFk1ZDFVUUZ6V1pNQUY0ZHBCamdsWlFRdlNiaXV1dGlfVG9rZW46TjByaWJRVzN6b2c5MHN4STNQeWNtNHBQbm5iXzE2OTczNTY5OTI6MTY5NzM2MDU5Ml9WNA" alt="img"></p>
 <h5 id="4-chdir"><a href="#4-chdir" class="headerlink" title="4.chdir()"></a>4.chdir()</h5><p>这个函数是用来跳目录的，有时想读的文件不在当前目录下就用这个来切换，因为<code>scandir()</code>会将这个目录下的文件和目录都列出来，那么利用操作数组的函数将内部指针移到我们想要的目录上然后直接用<code>chdir</code>切就好了，如果要向上跳就要构造<code>chdir(&#39;..&#39;)</code></p>
-<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTNhNDRhNTQyOTM4YmVmY2UyM2I1Y2YxYzlhZDRlOGNfbW0zR3V1VGg2VnFncjNmQldzVnVsODFaTkM2M3JSbXlfVG9rZW46QzJPZ2JGaUpJb1pmNjZ4eWZhZGM4VVNpbjNmXzE2OTczNTEzODc6MTY5NzM1NDk4N19WNA" alt="img"></p>
+<p><img src="https://amr7joxnxp.feishu.cn/space/api/box/stream/download/asynccode/?code=YWNiMjViMmZhYTMzOTJiYWE5Mzg1YmQ4MTZmM2I2MTNfQW9lUnJYNVJDdzFCOUE0RHQzNlJMWEFIZnViSWFXTUVfVG9rZW46QzJPZ2JGaUpJb1pmNjZ4eWZhZGM4VVNpbjNmXzE2OTczNTcwMDQ6MTY5NzM2MDYwNF9WNA" alt="img"></p>
 <h5 id="5-array-reverse"><a href="#5-array-reverse" class="headerlink" title="5.array_reverse()"></a>5.array_reverse()</h5><p>将整个数组倒过来，有的时候当我们想读的文件比较靠后时，就可以用这个函数把它倒过来，就可以少用几个<code>next()</code></p>
 <h5 id="6-highlight-file"><a href="#6-highlight-file" class="headerlink" title="6.highlight_file()"></a>6.highlight_file()</h5><p>打印输出或者返回 filename 文件中语法高亮版本的代码，相当于就是用来读取文件的</p>
 <h3 id="简单绕过cat，tac命令，绕过空格"><a href="#简单绕过cat，tac命令，绕过空格" class="headerlink" title="简单绕过cat，tac命令，绕过空格"></a>简单绕过cat，tac命令，绕过空格</h3><pre class="line-numbers language-php"><code class="language-php">  
