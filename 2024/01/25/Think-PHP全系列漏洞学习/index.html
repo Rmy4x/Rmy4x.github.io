@@ -386,12 +386,33 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/">
+                                <span class="chip bg-color">漏洞学习</span>
+                            </a>
+                        
+                            <a href="/tags/ThinkPHP%E6%A1%86%E6%9E%B6/">
+                                <span class="chip bg-color">ThinkPHP框架</span>
+                            </a>
+                        
+                            <a href="/tags/%E7%B3%BB%E5%88%97/">
+                                <span class="chip bg-color">系列</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/PHP-%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/" class="post-category">
+                                PHP 漏洞学习
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -421,7 +442,62 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <h2 id="0x01-ThinkPHP基本介绍"><a href="#0x01-ThinkPHP基本介绍" class="headerlink" title="0x01  ThinkPHP基本介绍"></a>0x01  ThinkPHP基本介绍</h2><h3 id="1-1-初步认识"><a href="#1-1-初步认识" class="headerlink" title="1.1 初步认识"></a>1.1 初步认识</h3><p>ThinkPHP是一个快速、兼容而且简单的轻量级国产PHP开发框架，遵循Apache 2开源协议发布，使用面向对象的开发结构和MVC模式，融合了Struts的思想和TagLib（标签库）、RoR的ORM映射和ActiveRecord模式。ThinkPHP可以支持windows&#x2F;Unix&#x2F;Linux等服务器环境，正式版需要PHP 5.0以上版本，支持MySql、PgSQL、Sqlite多种数据库以及PDO扩展。</p>
+<p><strong>总结一下：</strong>国人开发，上手难度低，容易搭建的框架，常见于违法网站上</p>
+<h3 id="1-2-版本介绍"><a href="#1-2-版本介绍" class="headerlink" title="1.2 版本介绍"></a>1.2 版本介绍</h3><p>ThinkPHP发展至今，核心版本主要有以下几个系列，ThinkPHP 2系列、ThinkPHP 3系列、ThinkPHP  5系列、ThinkPHP 6系列，各个系列之间在代码实现及功能方面，有较大区别。其中ThinkPHP 2以及ThinkPHP  3系列已经停止维护，ThinkPHP 5系列现使用最多，而ThinkPHP 3系列也积累了较多的历史用户。图片是以前的图，现在最新版本到了Think PHP 8.x了。</p>
+<p><img src="https://fe85281b.telegraph-image-2yz.pages.dev/file/d59a36620da2561bc2d5a.png"></p>
+<h2 id="0x02-常见高危漏洞"><a href="#0x02-常见高危漏洞" class="headerlink" title="0x02 常见高危漏洞"></a>0x02 常见高危漏洞</h2><p><img src="https://fe85281b.telegraph-image-2yz.pages.dev/file/1d285d82033361f372925.png"></p>
+<h2 id="0x03-漏洞分析"><a href="#0x03-漏洞分析" class="headerlink" title="0x03 漏洞分析"></a>0x03 漏洞分析</h2><h3 id="3-1-ThinkPHP-2-x-3-0远程代码执行漏洞"><a href="#3-1-ThinkPHP-2-x-3-0远程代码执行漏洞" class="headerlink" title="3.1 ThinkPHP 2.x&#x2F;3.0远程代码执行漏洞"></a>3.1 ThinkPHP 2.x&#x2F;3.0远程代码执行漏洞</h3><h4 id="3-1-1-漏洞描述"><a href="#3-1-1-漏洞描述" class="headerlink" title="3.1.1 漏洞描述"></a>3.1.1 漏洞描述</h4><p>在该版本中，Dispatcher.class.php中res参数中使用了preg_replace的&#x2F;e危险参数，使得preg_replace第二个参数就会被当做php代码执行，导致存在一个代码执行漏洞，攻击者可以利用构造的恶意URL执行任意PHP代码。</p>
+<h4 id="3-1-2-漏洞具体分析"><a href="#3-1-2-漏洞具体分析" class="headerlink" title="3.1.2 漏洞具体分析"></a>3.1.2 漏洞具体分析</h4><p>漏洞在102行代码中出现</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token variable">$res</span> <span class="token operator">=</span> <span class="token function">preg_replace</span><span class="token punctuation">(</span><span class="token string">'@(\w+)'</span><span class="token punctuation">.</span><span class="token variable">$depr</span><span class="token punctuation">.</span><span class="token string">'([^'</span><span class="token punctuation">.</span><span class="token variable">$depr</span><span class="token punctuation">.</span><span class="token string">'\/]+)@e'</span><span class="token punctuation">,</span> <span class="token string">'$var[\'\\1\']="\\2";'</span><span class="token punctuation">,</span> <span class="token function">implode</span><span class="token punctuation">(</span><span class="token variable">$depr</span><span class="token punctuation">,</span><span class="token variable">$paths</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>代码块首先检测路由规则，如果没有制定规则则按照默认规则进行URL调度，在preg_replace()函数中，正则表达式中使用了&#x2F;e模式，将“替换字符串”作为PHP代码求值，并用其结果来替换所搜索的字符串。</p>
+<p>正则表达式可以简化为<code>“\w+/([^/])”</code>，即搜索获取“&#x2F;”前后的两个参数，<code>$var[‘\1’]=”\2”</code>;是对数组的操作，将之前搜索到的第一个值作为新数组的键，将第二个值作为新数组的值，我们发现可以构造搜索到的第二个值，即可执行任意PHP代码，在PHP中，我们可以使用<code>$&#123;&#125;</code>里面可以执行函数，然后我们在thinkphp的url中的偶数位置使用<code>$&#123;&#125;</code>格式的php代码，即可最终执行thinkphp任意代码执行漏洞。</p>
+<p>例如:</p>
+<pre><code>index.php?s=a/b/c/$&#123;code&#125;
+index.php?s=a/b/c/d/e/$&#123;code&#125;
+</code></pre>
+<blockquote>
+<p>在这里复习一下preg_replace函数用法，这个函数是个替换函数，而且支持正则，使用方式如下：</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token function">preg_replace</span><span class="token punctuation">(</span><span class="token string">'正则规则'</span><span class="token punctuation">,</span><span class="token string">'替换字符'</span><span class="token punctuation">,</span><span class="token string">'目标字符'</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>这个函数的3个参数，结合起来的意思是：如果目标字符存在符合正则规则的字符，那么就替换为替换字符，如果此时正则规则中使用了<code>/e</code>这个修饰符，则存在代码执行漏洞。</p>
+<p>下面是搜索到的关于<code>/e</code>的解释：</p>
+<pre class="line-numbers language-php"><code class="language-php">e 配合函数<span class="token function">preg_replace</span><span class="token punctuation">(</span><span class="token punctuation">)</span>使用<span class="token punctuation">,</span> 可以把匹配来的字符串当作正则表达式执行<span class="token punctuation">;</span>  
+<span class="token operator">/</span>e 可执行模式，此为<span class="token constant">PHP</span>专有参数，例如preg_replace函数。
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>举例：</p>
+<p><code>&lt;?php preg_replace(&#39;/test/e&#39;,&#39;print_r(&quot;AAA&quot;);&#39;,&#39;just test&#39;)</code>;</p>
+<p>只要在“just test”中匹配到了“test”字符，就执行中间的print_r这条函数的命令。</p>
+</blockquote>
+<h4 id="3-1-3-漏洞复现"><a href="#3-1-3-漏洞复现" class="headerlink" title="3.1.3 漏洞复现"></a>3.1.3 漏洞复现</h4><blockquote>
+<p> cd vulhub&#x2F;thinkphp&#x2F;2-rce&#x2F;</p>
+<p>docker-compose up -d</p>
+</blockquote>
+<p><img src="https://fe85281b.telegraph-image-2yz.pages.dev/file/ce065b2735d69a27aebad.png"></p>
+<p>直接访问本地端口8080就可以了</p>
+<p><img src="https://fe85281b.telegraph-image-2yz.pages.dev/file/f5455536de928f0be9fe7.png"></p>
+<p>验证漏洞存在</p>
+<p>还可以这样写shell</p>
+<p><img src="https://fe85281b.telegraph-image-2yz.pages.dev/file/817ba7fee1eb9a73910eb.png"></p>
+<p><img src="https://fe85281b.telegraph-image-2yz.pages.dev/file/0d7f21f0a1369abb1675e.png"></p>
+<p>工具也是同样可以getshell和命令执行</p>
+<p><img src="C:/Users/Yu/AppData/Roaming/Typora/typora-user-images/image-20240126102901679.png"></p>
+<h3 id="3-2-ThinkPHP-5-x-远程代码执行漏洞"><a href="#3-2-ThinkPHP-5-x-远程代码执行漏洞" class="headerlink" title="3.2 ThinkPHP 5.x 远程代码执行漏洞"></a>3.2 ThinkPHP 5.x 远程代码执行漏洞</h3><h4 id="3-2-1-漏洞描述"><a href="#3-2-1-漏洞描述" class="headerlink" title="3.2.1 漏洞描述"></a>3.2.1 漏洞描述</h4><p>2018年12月10日，ThinkPHPv5系列发布安全更新，修复了一处可导致远程代码执行的严重漏洞。此次漏洞由ThinkPHP  v5框架代码问题引起，其覆盖面广，且可直接远程执行任何代码和命令。电子商务行业、金融服务行业、互联网游戏行业等网站使用该ThinkPHP框架比较多，需要格外关注。由于ThinkPHP v5框架对控制器名没有进行足够的安全检测，导致在没有开启强制路由的情况下，黑客构造特定的请求，可直接进行远程的代码执行，进而获得服务器权限。</p>
+<h4 id="3-2-2-漏洞具体分析"><a href="#3-2-2-漏洞具体分析" class="headerlink" title="3.2.2 漏洞具体分析"></a>3.2.2 漏洞具体分析</h4><p>这个自己暂时就具体分析不了了，后期学学再补上吧。</p>
+<p>在这里贴个分析链接<a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/289860.html">https://www.freebuf.com/articles/web/289860.html</a></p>
+<h4 id="3-2-3-漏洞复现"><a href="#3-2-3-漏洞复现" class="headerlink" title="3.2.3 漏洞复现"></a>3.2.3 漏洞复现</h4><pre><code>cd vulhub/thinkphp/5-rce
+docker-compose up -d
+</code></pre>
+<p><img src="https://fe85281b.telegraph-image-2yz.pages.dev/file/3a1fcebcc4a07b1aaee12.png"></p>
+<p>高版本的就跑工具了，毕竟自己分析不来，payload也没必要去手敲了</p>
+<p><img src="C:/Users/Yu/AppData/Roaming/Typora/typora-user-images/image-20240126104035430.png"></p>
+<p>剩下的步骤就不多说了，还是一样的getshell，命令执行</p>
+<h3 id="3-3ThinkPHP-v6-0-x反序列化漏洞漏洞"><a href="#3-3ThinkPHP-v6-0-x反序列化漏洞漏洞" class="headerlink" title="3.3ThinkPHP v6.0.x反序列化漏洞漏洞"></a>3.3ThinkPHP v6.0.x反序列化漏洞漏洞</h3><h3 id="3-3-1-漏洞描述"><a href="#3-3-1-漏洞描述" class="headerlink" title="3.3.1 漏洞描述"></a>3.3.1 漏洞描述</h3><p>说实话，这个漏洞实战中难找，除非白盒审计，黑盒是基本上没可能的，常见的话也就可能出在CTF比赛里边。</p>
+<p>贴个链接吧</p>
+<p>自己还没分析明白</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u011377996/article/details/87362329">https://blog.csdn.net/u011377996/article/details/87362329</a></p>
+
                 
             </div>
             <hr/>
@@ -484,7 +560,19 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/">
+                                    <span class="chip bg-color">漏洞学习</span>
+                                </a>
+                            
+                                <a href="/tags/ThinkPHP%E6%A1%86%E6%9E%B6/">
+                                    <span class="chip bg-color">ThinkPHP框架</span>
+                                </a>
+                            
+                                <a href="/tags/%E7%B3%BB%E5%88%97/">
+                                    <span class="chip bg-color">系列</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
